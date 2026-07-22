@@ -1,289 +1,446 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="uz">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Register</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
-<style>
-  :root{
-    --ink:#121316;
-    --paper:#F3F1EC;
-    --stub:#E7E2D6;
-    --accent:#C4491F;
-    --accent-soft:#E7CBBC;
-    --line: rgba(18,19,22,0.16);
-    --radius:18px;
-  }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Akkaunt Yaratish — HireQarshi</title>
 
-  *{box-sizing:border-box;}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;700;800;900&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-  html,body{
-    height:100%;
-    margin:0;
-  }
+    <style>
+        :root {
+            --bg-0: #0a0c18;
+            --bg-1: #12142b;
+            --amber: #ffc154;
+            --amber-dim: #ffc15422;
+            --blue: #5b7fff;
+            --text-hi: #f3f4fb;
+            --text-lo: #9aa0c3;
+            --line: #2a2e58;
+        }
 
-  body{
-    background:
-      radial-gradient(circle at 15% 10%, rgba(196,73,31,0.10), transparent 45%),
-      radial-gradient(circle at 85% 90%, rgba(196,73,31,0.08), transparent 40%),
-      var(--ink);
-    font-family:'Work Sans', sans-serif;
-    color:var(--ink);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    padding:48px 20px;
-  }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-  /* ---------- ticket card ---------- */
+        body {
+            font-family: 'Manrope', sans-serif;
+            min-height: 100vh;
+            min-height: 100dvh;
+            background: var(--bg-0);
+            color: var(--text-hi);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 40px 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
 
-  .ticket{
-    position:relative;
-    width:100%;
-    max-width:860px;
-    display:grid;
-    grid-template-columns:1fr 300px;
-    background:var(--paper);
-    border-radius:var(--radius);
-    box-shadow:0 40px 80px rgba(0,0,0,0.45), 0 2px 0 rgba(255,255,255,0.04) inset;
-    overflow:hidden;
-  }
+        /* ---------- Ambient backdrop, consistent with landing page ---------- */
+        .grid-field {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            background-image:
+                linear-gradient(var(--bg-1) 1px, transparent 1px),
+                linear-gradient(90deg, var(--bg-1) 1px, transparent 1px);
+            background-size: 64px 64px;
+            mask-image: radial-gradient(ellipse 80% 60% at 50% 40%, black 10%, transparent 75%);
+            -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 40%, black 10%, transparent 75%);
+            opacity: 0.5;
+        }
 
-  .ticket-main{
-    padding:56px 52px;
-  }
+        .glow {
+            position: fixed;
+            width: 480px;
+            height: 480px;
+            border-radius: 50%;
+            filter: blur(120px);
+            z-index: 0;
+            pointer-events: none;
+        }
+        .glow.amber { background: #ffc15433; top: -8%; right: 6%; animation: drift1 16s ease-in-out infinite; }
+        .glow.blue  { background: #5b7fff2e; bottom: -12%; left: 2%; animation: drift2 18s ease-in-out infinite; }
 
-  .eyebrow{
-    font-size:12.5px;
-    letter-spacing:0.16em;
-    text-transform:uppercase;
-    color:var(--accent);
-    font-weight:600;
-    margin:0 0 14px;
-  }
+        @keyframes drift1 {
+            0%, 100% { transform: translate(0,0) scale(1); }
+            50% { transform: translate(-40px, 30px) scale(1.15); }
+        }
+        @keyframes drift2 {
+            0%, 100% { transform: translate(0,0) scale(1); }
+            50% { transform: translate(30px, -30px) scale(1.1); }
+        }
 
-  h1{
-    font-family:'Fraunces', serif;
-    font-weight:600;
-    font-size:clamp(30px, 4vw, 40px);
-    line-height:1.08;
-    margin:0 0 10px;
-    letter-spacing:-0.01em;
-  }
+        @media (prefers-reduced-motion: reduce) {
+            .glow, .radar-ping, .pin { animation: none !important; }
+        }
 
-  .sub{
-    font-size:15px;
-    color:rgba(18,19,22,0.62);
-    margin:0 0 36px;
-    max-width:36ch;
-    line-height:1.5;
-  }
+        /* ---------- Brand mark (top-left, floats above card) ---------- */
+        .brandbar {
+            position: fixed;
+            top: 28px;
+            left: clamp(20px, 5vw, 56px);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 2;
+        }
+        .brandmark {
+            width: 32px; height: 32px;
+            border-radius: 9px;
+            background: linear-gradient(140deg, var(--amber), #ff9d4d);
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 800;
+            font-family: 'Unbounded', sans-serif;
+            font-size: 14px;
+            color: #14131f;
+            box-shadow: 0 6px 18px -4px #ffc15466;
+        }
+        .brandname {
+            font-family: 'Unbounded', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        .brandname span { color: var(--amber); }
 
-  /* ---------- stub side ---------- */
+        /* ---------- Card shell ---------- */
+        .container {
+            width: 100%;
+            max-width: 1050px;
+            display: grid;
+            grid-template-columns: 1fr 1.1fr;
+            background: linear-gradient(180deg, #171a38b3, #12142bcc);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid var(--line);
+            border-radius: 28px;
+            overflow: hidden;
+            box-shadow: 0 40px 70px -20px #00000066, inset 0 1px 0 #ffffff14;
+            position: relative;
+            z-index: 1;
+        }
 
-  .ticket-stub{
-    position:relative;
-    background:var(--stub);
-    padding:56px 34px;
-    display:flex;
-    flex-direction:column;
-    justify-content:space-between;
-    border-left:2px dashed rgba(18,19,22,0.22);
-  }
+        /* ---------- Left panel ---------- */
+        .left {
+            padding: 64px 50px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            background:
+                radial-gradient(circle at 20% 20%, #ffc15414, transparent 55%),
+                linear-gradient(160deg, #ffc15410, transparent 60%);
+            border-right: 1px solid var(--line);
+            position: relative;
+        }
 
-  .ticket-stub::before,
-  .ticket-stub::after{
-    content:"";
-    position:absolute;
-    left:-14px;
-    width:28px;
-    height:28px;
-    background:var(--ink);
-    border-radius:50%;
-  }
-  .ticket-stub::before{ top:-14px; }
-  .ticket-stub::after{ bottom:-14px; }
+        .eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.6px;
+            text-transform: uppercase;
+            color: var(--amber);
+            background: var(--amber-dim);
+            border: 1px solid #ffc15440;
+            padding: 6px 13px 6px 9px;
+            border-radius: 100px;
+            margin-bottom: 26px;
+            width: fit-content;
+        }
+        .eyebrow i {
+            width: 6px; height: 6px; border-radius: 50%;
+            background: var(--amber);
+            animation: pulseDot 2s infinite;
+        }
+        @keyframes pulseDot {
+            0% { box-shadow: 0 0 0 0 #ffc15466; }
+            70% { box-shadow: 0 0 0 8px transparent; }
+            100% { box-shadow: 0 0 0 0 transparent; }
+        }
 
-  .stub-label{
-    font-size:11px;
-    letter-spacing:0.14em;
-    text-transform:uppercase;
-    color:rgba(18,19,22,0.5);
-    margin:0 0 6px;
-  }
+        .left h1 {
+            font-family: 'Unbounded', sans-serif;
+            font-size: clamp(30px, 3.4vw, 42px);
+            font-weight: 800;
+            line-height: 1.18;
+            letter-spacing: -0.5px;
+            margin-bottom: 20px;
+        }
+        .left h1 em {
+            font-style: normal;
+            background: linear-gradient(120deg, var(--amber), #ffe2a8 60%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
 
-  .stub-value{
-    font-family:'Fraunces', serif;
-    font-size:19px;
-    font-weight:600;
-    margin:0 0 26px;
-  }
+        .left p {
+            font-size: 15.5px;
+            line-height: 1.8;
+            color: var(--text-lo);
+            font-weight: 400;
+            margin-bottom: 36px;
+        }
 
-  .stub-code{
-    writing-mode:vertical-rl;
-    text-orientation:mixed;
-    font-family:'Fraunces', serif;
-    font-size:13px;
-    letter-spacing:0.3em;
-    color:rgba(18,19,22,0.35);
-    align-self:flex-end;
-  }
+        /* Signature element: same radar/pin motif as landing page, small variant */
+        .radar {
+            position: relative;
+            width: 132px;
+            height: 132px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .radar-ring { position: absolute; border-radius: 50%; border: 1px solid #ffc15450; }
+        .radar-ring.r1 { width: 60px; height: 60px; }
+        .radar-ring.r2 { width: 96px; height: 96px; }
+        .radar-ring.r3 { width: 132px; height: 132px; border-color: #5b7fff3a; }
+        .radar-ping {
+            position: absolute;
+            width: 40px; height: 40px;
+            border-radius: 50%;
+            border: 1.5px solid var(--amber);
+            animation: ping 2.8s cubic-bezier(0,0,.3,1) infinite;
+        }
+        @keyframes ping {
+            0% { width: 36px; height: 36px; opacity: 0.9; }
+            100% { width: 132px; height: 132px; opacity: 0; }
+        }
+        .pin {
+            position: absolute;
+            width: 26px; height: 26px;
+            border-radius: 8px;
+            background: linear-gradient(140deg, var(--amber), #ff9d4d);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 13px;
+            box-shadow: 0 8px 18px -4px #ffc15488;
+            z-index: 2;
+        }
+        .pin.small {
+            width: 18px; height: 18px; font-size: 9px;
+            background: linear-gradient(140deg, var(--blue), #7fa0ff);
+            box-shadow: 0 6px 14px -4px #5b7fff77;
+        }
+        .pin.p2 { top: 4px; left: 18%; animation: bob 3.2s ease-in-out infinite; }
+        .pin.p3 { bottom: 0; right: 14%; animation: bob 3.6s ease-in-out infinite 0.4s; }
+        @keyframes bob {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-6px); }
+        }
 
-  /* ---------- form (form.as_p output) ---------- */
+        /* ---------- Right panel: form ---------- */
+        .right {
+            padding: 64px 50px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
 
-  form{
-    margin:0;
-  }
+        .right h2 {
+            font-family: 'Unbounded', sans-serif;
+            text-align: center;
+            margin-bottom: 32px;
+            font-size: 26px;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+        }
 
-  form p{
-    margin:0 0 20px;
-    display:flex;
-    flex-direction:column;
-    gap:7px;
-  }
+        /* Django form.as_p output styling */
+        form p {
+            margin-bottom: 18px;
+            position: relative;
+        }
 
-  form label{
-    font-size:12.5px;
-    font-weight:600;
-    letter-spacing:0.02em;
-    color:rgba(18,19,22,0.75);
-  }
+        form label {
+            display: block;
+            margin-bottom: 7px;
+            font-weight: 600;
+            font-size: 13.5px;
+            color: var(--text-hi);
+            letter-spacing: 0.2px;
+        }
 
-  form input,
-  form select,
-  form textarea{
-    font-family:'Work Sans', sans-serif;
-    font-size:15px;
-    padding:12px 14px;
-    border:1.5px solid var(--line);
-    border-radius:10px;
-    background:#fff;
-    color:var(--ink);
-    outline:none;
-    transition:border-color .15s ease, box-shadow .15s ease;
-    width:100%;
-  }
+        form input,
+        form select,
+        form textarea {
+            width: 100%;
+            padding: 13px 17px;
+            background: #ffffff08;
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            font-size: 15px;
+            font-family: 'Manrope', sans-serif;
+            color: var(--text-hi);
+            transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+            outline: none;
+        }
 
-  form textarea{
-    min-height:96px;
-    resize:vertical;
-  }
+        form input::placeholder,
+        form textarea::placeholder {
+            color: #7d84ab;
+        }
 
-  form input:focus,
-  form select:focus,
-  form textarea:focus{
-    border-color:var(--accent);
-    box-shadow:0 0 0 4px var(--accent-soft);
-  }
+        form textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
 
-  form input[type="checkbox"],
-  form input[type="radio"]{
-    width:auto;
-    accent-color:var(--accent);
-  }
+        form input:focus,
+        form select:focus,
+        form textarea:focus {
+            background: #ffffff0f;
+            border-color: var(--amber);
+            box-shadow: 0 0 0 4px #ffc15422;
+        }
 
-  ul.errorlist{
-    list-style:none;
-    margin:2px 0 0;
-    padding:0;
-    color:var(--accent);
-    font-size:12.5px;
-  }
+        form select option {
+            background: var(--bg-1);
+            color: var(--text-hi);
+        }
 
-  button[type="submit"]{
-    margin-top:10px;
-    width:100%;
-    padding:14px 18px;
-    background:var(--ink);
-    color:var(--paper);
-    border:none;
-    border-radius:10px;
-    font-family:'Work Sans', sans-serif;
-    font-size:15px;
-    font-weight:600;
-    letter-spacing:0.01em;
-    cursor:pointer;
-    transition:background .15s ease, transform .05s ease;
-  }
+        input[type="checkbox"],
+        input[type="radio"] {
+            width: auto;
+            accent-color: var(--amber);
+            margin-right: 8px;
+            cursor: pointer;
+        }
 
-  button[type="submit"]:hover{
-    background:var(--accent);
-  }
+        ul.errorlist {
+            list-style: none;
+            color: #ff8080;
+            font-size: 12.5px;
+            margin-top: 6px;
+            padding-left: 2px;
+        }
 
-  button[type="submit"]:active{
-    transform:translateY(1px);
-  }
+        button {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 14px;
+            background: linear-gradient(135deg, var(--amber), #ff9d4d);
+            color: #14131f;
+            font-family: 'Manrope', sans-serif;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.35s cubic-bezier(.2,.8,.2,1), box-shadow 0.35s;
+            margin-top: 12px;
+            box-shadow: 0 14px 30px -10px #ffc15477;
+        }
 
-  button[type="submit"]:focus-visible,
-  form input:focus-visible,
-  form select:focus-visible,
-  form textarea:focus-visible{
-    outline:2px solid var(--accent);
-    outline-offset:2px;
-  }
+        button:hover { transform: translateY(-3px); box-shadow: 0 18px 36px -8px #ffc15499; }
+        button:focus-visible { outline: 2px solid var(--amber); outline-offset: 3px; }
 
-  /* ---------- responsive ---------- */
+        .footer {
+            text-align: center;
+            margin-top: 28px;
+            color: var(--text-lo);
+            font-size: 14px;
+        }
 
-  @media (max-width:720px){
-    .ticket{
-      grid-template-columns:1fr;
-    }
-    .ticket-stub{
-      border-left:none;
-      border-top:2px dashed rgba(18,19,22,0.22);
-      flex-direction:row;
-      align-items:center;
-      justify-content:space-between;
-    }
-    .ticket-stub::before,
-    .ticket-stub::after{
-      left:auto;
-      top:-14px;
-    }
-    .ticket-stub::before{ left:-14px; }
-    .ticket-stub::after{ right:-14px; }
-    .stub-code{
-      writing-mode:horizontal-tb;
-      letter-spacing:0.1em;
-    }
-    .ticket-main{
-      padding:40px 28px;
-    }
-  }
+        .footer h4 { font-weight: 500; font-size: 14px; margin-bottom: 4px; }
 
-  @media (prefers-reduced-motion:reduce){
-    *{transition:none !important;}
-  }
-</style>
+        .footer a {
+            color: var(--amber);
+            text-decoration: none;
+            font-weight: 700;
+            transition: color 0.3s ease;
+            margin-left: 5px;
+        }
+
+        .footer a:hover { color: #ffd989; text-decoration: underline; }
+
+        @media (max-width: 900px) {
+            .container { grid-template-columns: 1fr; }
+
+            .left {
+                text-align: center;
+                align-items: center;
+                padding: 48px 30px 36px;
+                border-right: none;
+                border-bottom: 1px solid var(--line);
+            }
+            .left .eyebrow { margin-left: auto; margin-right: auto; }
+            .left .radar { margin: 8px auto 0; }
+
+            .right { padding: 40px 28px; }
+        }
+
+        @media (max-width: 420px) {
+            body { padding: 24px 12px; }
+            .left, .right { padding-left: 22px; padding-right: 22px; }
+        }
+    </style>
 </head>
+
 <body>
 
-  <div class="ticket">
+    <div class="grid-field"></div>
+    <div class="glow amber"></div>
+    <div class="glow blue"></div>
 
-    <div class="ticket-main">
-      <p class="eyebrow">Admission &middot; One seat</p>
-      <h1>Create your account</h1>
-      <p class="sub">Fill in your details below — it takes less than a minute to get your pass.</p>
-
-      <form method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Register</button>
-      </form>
+    <div class="brandbar">
+        <div class="brandmark">HQ</div>
+        <div class="brandname">Hire<span>Qarshi</span></div>
     </div>
 
-    <div class="ticket-stub">
-      <div>
-        <p class="stub-label">Status</p>
-        <p class="stub-value">Not yet issued</p>
-      </div>
-      <p class="stub-code">REGISTER&nbsp;&middot;&nbsp;2026</p>
-    </div>
+    <div class="container">
 
-  </div>
+        <div class="left">
+
+            <div class="eyebrow"><i></i> Yangi a'zo</div>
+
+            <h1>Xush <em>Kelibsiz!</em></h1>
+
+            <p>
+              Davom etish uchun hisob yarating. Bir marta ro'yxatdan o'ting, shaxsiy boshqaruv panelingizga kiring, profilingizni boshqaring va platformaning barcha imkoniyatlaridan foydalaning.
+            </p>
+
+            <div class="radar">
+                <div class="radar-ring r3"></div>
+                <div class="radar-ring r2"></div>
+                <div class="radar-ring r1"></div>
+                <div class="radar-ping"></div>
+                <div class="pin">📍</div>
+                <div class="pin small p2">💼</div>
+                <div class="pin small p3">🤝</div>
+            </div>
+
+        </div>
+
+        <div class="right">
+
+            <h2>Akkaunt Yaratish</h2>
+
+            <form method="post" enctype="multipart/form-data">
+
+                {% csrf_token %}
+
+                {{ form.as_p }}
+
+                <button type="submit">
+                    Akkaunt Yaratish
+                </button>
+
+            </form>
+
+            <div class="footer">
+                <h4>Allaqachon hisobingiz bormi? Tizimga kirishni Bosing</h4>
+                <a href="{% url 'login' %}">Login</a>
+            </div>
+
+        </div>
+
+    </div>
 
 </body>
 </html>

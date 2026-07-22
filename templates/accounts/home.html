@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HireQarshi — Karyerangizni boshlang</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;700;800;900&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-0: #0a0c18;
+            --bg-1: #12142b;
+            --bg-2: #191c3d;
+            --amber: #ffc154;
+            --amber-dim: #ffc15422;
+            --blue: #5b7fff;
+            --text-hi: #f3f4fb;
+            --text-lo: #9aa0c3;
+            --line: #2a2e58;
+            --radius: 20px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Manrope', sans-serif;
+            min-height: 100vh;
+            min-height: 100dvh;
+            background: var(--bg-0);
+            color: var(--text-hi);
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* ---------- Ambient backdrop: city-grid + drifting glow ---------- */
+        .grid-field {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            background-image:
+                linear-gradient(var(--bg-1) 1px, transparent 1px),
+                linear-gradient(90deg, var(--bg-1) 1px, transparent 1px);
+            background-size: 64px 64px;
+            mask-image: radial-gradient(ellipse 80% 60% at 50% 40%, black 10%, transparent 75%);
+            -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 40%, black 10%, transparent 75%);
+            opacity: 0.5;
+        }
+
+        .glow {
+            position: fixed;
+            width: 480px;
+            height: 480px;
+            border-radius: 50%;
+            filter: blur(120px);
+            z-index: 0;
+            pointer-events: none;
+        }
+        .glow.amber { background: #ffc15433; top: -8%; right: 8%; animation: drift1 16s ease-in-out infinite; }
+        .glow.blue  { background: #5b7fff2e; bottom: -10%; left: 4%; animation: drift2 18s ease-in-out infinite; }
+
+        @keyframes drift1 {
+            0%, 100% { transform: translate(0,0) scale(1); }
+            50% { transform: translate(-40px, 30px) scale(1.15); }
+        }
+        @keyframes drift2 {
+            0%, 100% { transform: translate(0,0) scale(1); }
+            50% { transform: translate(30px, -30px) scale(1.1); }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .glow, .radar-ping, .pin, .float { animation: none !important; }
+        }
+
+        /* ---------- Shell ---------- */
+        .shell {
+            position: relative;
+            z-index: 1;
+            min-height: 100vh;
+            min-height: 100dvh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .brandbar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 32px clamp(20px, 5vw, 72px) 0;
+        }
+
+        .brandmark {
+            width: 34px;
+            height: 34px;
+            border-radius: 9px;
+            background: linear-gradient(140deg, var(--amber), #ff9d4d);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-family: 'Unbounded', sans-serif;
+            font-size: 15px;
+            color: #14131f;
+            box-shadow: 0 6px 18px -4px #ffc15466;
+        }
+
+        .brandname {
+            font-family: 'Unbounded', sans-serif;
+            font-size: 15px;
+            font-weight: 600;
+            letter-spacing: 0.2px;
+        }
+        .brandname span { color: var(--amber); }
+
+        .container {
+            flex: 1;
+            width: 100%;
+            max-width: 1180px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 64px;
+            padding: 48px clamp(20px, 5vw, 72px) 64px;
+        }
+
+        /* ---------- Left column ---------- */
+        .left { flex: 1.05; }
+
+        .eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12.5px;
+            font-weight: 700;
+            letter-spacing: 0.6px;
+            text-transform: uppercase;
+            color: var(--amber);
+            background: var(--amber-dim);
+            border: 1px solid #ffc15440;
+            padding: 7px 14px 7px 10px;
+            border-radius: 100px;
+            margin-bottom: 28px;
+        }
+        .eyebrow i {
+            width: 7px; height: 7px; border-radius: 50%;
+            background: var(--amber);
+            box-shadow: 0 0 0 0 #ffc15488;
+            animation: pulseDot 2s infinite;
+        }
+        @keyframes pulseDot {
+            0% { box-shadow: 0 0 0 0 #ffc15466; }
+            70% { box-shadow: 0 0 0 8px transparent; }
+            100% { box-shadow: 0 0 0 0 transparent; }
+        }
+
+        .left h1 {
+            font-family: 'Unbounded', sans-serif;
+            font-size: clamp(34px, 4.6vw, 58px);
+            font-weight: 800;
+            line-height: 1.12;
+            letter-spacing: -0.5px;
+            margin-bottom: 22px;
+        }
+        .left h1 em {
+            font-style: normal;
+            background: linear-gradient(120deg, var(--amber), #ffe2a8 60%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .left > p.lead {
+            font-size: 17px;
+            line-height: 1.75;
+            color: var(--text-lo);
+            max-width: 520px;
+            margin-bottom: 40px;
+            font-weight: 400;
+        }
+
+        .buttons { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 56px; }
+
+        .btn {
+            text-decoration: none;
+            padding: 15px 34px;
+            border-radius: 100px;
+            font-size: 15.5px;
+            font-weight: 700;
+            letter-spacing: 0.2px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: transform 0.35s cubic-bezier(.2,.8,.2,1), box-shadow 0.35s, background 0.35s, border-color 0.35s;
+        }
+        .btn:focus-visible {
+            outline: 2px solid var(--amber);
+            outline-offset: 3px;
+        }
+
+        .register {
+            background: linear-gradient(135deg, var(--amber), #ff9d4d);
+            color: #14131f;
+            border: none;
+            box-shadow: 0 14px 30px -10px #ffc15477;
+        }
+        .register:hover { transform: translateY(-3px); box-shadow: 0 18px 36px -8px #ffc15499; }
+
+        .login {
+            background: transparent;
+            border: 1.5px solid var(--line);
+            color: var(--text-hi);
+        }
+        .login:hover { border-color: var(--amber); background: var(--amber-dim); transform: translateY(-3px); }
+
+        /* Stat strip — encodes real scale, not decoration */
+        .stats {
+            display: flex;
+            gap: clamp(20px, 4vw, 44px);
+            flex-wrap: wrap;
+            border-top: 1px solid var(--line);
+            padding-top: 28px;
+        }
+        .stat b {
+            display: block;
+            font-family: 'Unbounded', sans-serif;
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-hi);
+        }
+        .stat span {
+            font-size: 12.5px;
+            color: var(--text-lo);
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+        }
+
+        /* ---------- Right column: sign-up card ---------- */
+        .right { flex: 0.95; display: flex; justify-content: center; }
+
+        .card {
+            width: 100%;
+            max-width: 400px;
+            background: linear-gradient(180deg, #171a38cc, #12142bcc);
+            backdrop-filter: blur(22px);
+            -webkit-backdrop-filter: blur(22px);
+            border: 1px solid var(--line);
+            border-radius: 26px;
+            padding: 38px 32px 32px;
+            box-shadow: 0 40px 70px -20px #00000066, inset 0 1px 0 #ffffff14;
+            animation: float 6s ease-in-out infinite;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-12px); }
+        }
+
+        /* Signature element: radar / pulse locating open jobs across Qarshi */
+        .radar {
+            position: relative;
+            width: 100%;
+            height: 132px;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .radar-ring {
+            position: absolute;
+            border-radius: 50%;
+            border: 1px solid #ffc15455;
+        }
+        .radar-ring.r1 { width: 70px; height: 70px; }
+        .radar-ring.r2 { width: 108px; height: 108px; }
+        .radar-ring.r3 { width: 132px; height: 132px; border-color: #5b7fff40; }
+
+        .radar-ping {
+            position: absolute;
+            width: 70px; height: 70px;
+            border-radius: 50%;
+            border: 1.5px solid var(--amber);
+            animation: ping 2.8s cubic-bezier(0,0,.3,1) infinite;
+        }
+        @keyframes ping {
+            0% { width: 40px; height: 40px; opacity: 0.9; }
+            100% { width: 140px; height: 140px; opacity: 0; }
+        }
+
+        .pin {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            border-radius: 9px;
+            background: linear-gradient(140deg, var(--amber), #ff9d4d);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 15px;
+            box-shadow: 0 8px 20px -4px #ffc15488;
+            z-index: 2;
+        }
+        .pin.small {
+            width: 20px; height: 20px; font-size: 10px;
+            background: linear-gradient(140deg, var(--blue), #7fa0ff);
+            box-shadow: 0 6px 16px -4px #5b7fff77;
+        }
+        .pin.p2 { top: 6px; left: 22%; animation: bob 3.2s ease-in-out infinite; }
+        .pin.p3 { bottom: 2px; right: 18%; animation: bob 3.6s ease-in-out infinite 0.4s; }
+        @keyframes bob {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-6px); }
+        }
+
+        .card h2 {
+            text-align: center;
+            font-family: 'Unbounded', sans-serif;
+            margin-bottom: 10px;
+            font-size: 23px;
+            font-weight: 700;
+            letter-spacing: -0.2px;
+        }
+
+        .card > p.sub {
+            text-align: center;
+            color: var(--text-lo);
+            line-height: 1.7;
+            font-size: 14.5px;
+            font-weight: 400;
+            margin-bottom: 28px;
+        }
+
+        .features {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .feature {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-hi);
+            background: #ffffff08;
+            padding: 13px 16px;
+            border-radius: 14px;
+            border: 1px solid #ffffff0f;
+            transition: background 0.3s ease, transform 0.3s ease, border-color 0.3s ease;
+        }
+        .feature:hover {
+            background: var(--amber-dim);
+            border-color: #ffc15440;
+            transform: translateX(4px);
+        }
+        .feature .tick {
+            flex-shrink: 0;
+            width: 22px; height: 22px;
+            border-radius: 50%;
+            background: #ffc15422;
+            color: var(--amber);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 11px;
+            border: 1px solid #ffc15455;
+        }
+
+        /* ---------- Responsive ---------- */
+        @media (max-width: 900px) {
+            .container {
+                flex-direction: column-reverse;
+                text-align: center;
+                gap: 48px;
+                padding-top: 20px;
+            }
+            .left > p.lead { margin-left: auto; margin-right: auto; }
+            .buttons { justify-content: center; }
+            .stats { justify-content: center; border-top: none; padding-top: 0; }
+            .card { max-width: 420px; }
+            .feature { text-align: left; }
+        }
+
+        @media (max-width: 420px) {
+            .btn { flex: 1 1 auto; justify-content: center; padding: 15px 20px; }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="grid-field"></div>
+    <div class="glow amber"></div>
+    <div class="glow blue"></div>
+
+    <div class="shell">
+
+        <div class="brandbar">
+            <div class="brandmark">HQ</div>
+            <div class="brandname">Hire<span>Qarshi</span></div>
+        </div>
+
+        <div class="container">
+
+            <div class="left">
+
+                <div class="eyebrow"><i></i> Qarshi shahridagi ish bozori</div>
+
+                <h1>Karyerangizni <em>biz bilan</em> boshlang.</h1>
+
+                <p class="lead">
+                    HireQarshi sizni yangi ish imkoniyatlari va ishonchli ish beruvchilar bilan bog‘laydi. Bir necha bosqichda ro‘yxatdan o‘ting va o‘zingizga mos ishni toping.
+                </p>
+
+                <div class="buttons">
+                    <a href="{% url 'register' %}" class="btn register">Ruyxatdan O'tish →</a>
+                    <a href="{% url 'login' %}" class="btn login">Tizimga kirish</a>
+                </div>
+
+                <div class="stats">
+                    <div class="stat"><b>500+</b><span>Faol e'lonlar</span></div>
+                    <div class="stat"><b>120+</b><span>Ish beruvchilar</span></div>
+                    <div class="stat"><b>3 daq.</b><span>Ro'yxatdan o'tish</span></div>
+                </div>
+
+            </div>
+
+            <div class="right">
+
+                <div class="card">
+
+                    <div class="radar">
+                        <div class="radar-ring r3"></div>
+                        <div class="radar-ring r2"></div>
+                        <div class="radar-ring r1"></div>
+                        <div class="radar-ping"></div>
+                        <div class="pin">📍</div>
+                        <div class="pin small p2">💼</div>
+                        <div class="pin small p3">🤝</div>
+                    </div>
+
+                    <h2>Xush kelibsiz</h2>
+
+                    <p class="sub">
+                        Qarshidagi eng yaxshi ish imkoniyatlarini kashf eting.<br>
+                        Ish izlovchilar va ish beruvchilarni bir platformada birlashtiradigan zamonaviy tizim.
+                    </p>
+
+                    <div class="features">
+                        <div class="feature"><span class="tick">✓</span> Ish beruvchilar bilan tez bog'lanish</div>
+                        <div class="feature"><span class="tick">✓</span> Qarshidagi ish e'lonlari</div>
+                        <div class="feature"><span class="tick">✓</span> Bir necha daqiqada ro'yxatdan o'tish</div>
+                        <div class="feature"><span class="tick">✓</span> Zamonaviy va qulay boshqaruv paneli</div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</body>
+</html>
