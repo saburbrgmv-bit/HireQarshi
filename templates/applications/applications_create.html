@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HireQarshi — Ariza topshirish</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;700;800;900&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-0: #0a0c18;
+            --bg-1: #12142b;
+            --bg-2: #191c3d;
+            --amber: #ffc154;
+            --amber-dim: #ffc15422;
+            --blue: #5b7fff;
+            --text-hi: #f3f4fb;
+            --text-lo: #9aa0c3;
+            --line: #2a2e58;
+            --radius: 20px;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Manrope', sans-serif;
+            min-height: 100vh;
+            min-height: 100dvh;
+            background: var(--bg-0);
+            color: var(--text-hi);
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        a { text-decoration: none; color: inherit; }
+
+        /* ---------- Ambient Backdrop ---------- */
+        .grid-field {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            background-image:
+                linear-gradient(var(--bg-1) 1px, transparent 1px),
+                linear-gradient(90deg, var(--bg-1) 1px, transparent 1px);
+            background-size: 64px 64px;
+            mask-image: radial-gradient(ellipse 80% 60% at 50% 40%, black 10%, transparent 75%);
+            -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 40%, black 10%, transparent 75%);
+            opacity: 0.4;
+            pointer-events: none;
+        }
+
+        .glow {
+            position: fixed;
+            width: 480px;
+            height: 480px;
+            border-radius: 50%;
+            filter: blur(120px);
+            z-index: 0;
+            pointer-events: none;
+        }
+        .glow.amber { background: #ffc15422; top: -8%; right: 8%; animation: drift1 16s ease-in-out infinite; }
+        .glow.blue  { background: #5b7fff1e; bottom: -10%; left: 4%; animation: drift2 18s ease-in-out infinite; }
+
+        @keyframes drift1 {
+            0%, 100% { transform: translate(0,0) scale(1); }
+            50% { transform: translate(-40px, 30px) scale(1.15); }
+        }
+        @keyframes drift2 {
+            0%, 100% { transform: translate(0,0) scale(1); }
+            50% { transform: translate(30px, -30px) scale(1.1); }
+        }
+
+        /* ---------- Header ---------- */
+        header {
+            position: relative;
+            z-index: 10;
+            height: 76px;
+            border-bottom: 1px solid var(--line);
+            background: rgba(18, 20, 43, 0.7);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+        }
+
+        .nav {
+            width: min(1080px, calc(100% - 40px));
+            height: 100%;
+            margin: auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--text-hi);
+            font: 700 18px 'Unbounded', sans-serif;
+        }
+
+        .mark {
+            display: grid;
+            place-items: center;
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            color: #14131f;
+            background: linear-gradient(140deg, var(--amber), #ff9d4d);
+            font-size: 16px;
+            font-weight: 800;
+            box-shadow: 0 6px 18px -4px #ffc15466;
+        }
+
+        .brand b { color: var(--amber); }
+
+        .back {
+            color: var(--text-lo);
+            font-size: 13.5px;
+            font-weight: 700;
+            transition: color 0.2s;
+        }
+        .back:hover { color: var(--amber); }
+
+        /* ---------- Main Content ---------- */
+        main {
+            position: relative;
+            z-index: 1;
+            width: min(720px, calc(100% - 40px));
+            margin: 0 auto;
+            padding: 56px 0 72px;
+        }
+
+        .eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.6px;
+            text-transform: uppercase;
+            color: var(--amber);
+            background: var(--amber-dim);
+            border: 1px solid #ffc15440;
+            padding: 6px 14px;
+            border-radius: 100px;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            margin: 0;
+            font-family: 'Unbounded', sans-serif;
+            font-weight: 800;
+            font-size: clamp(26px, 4vw, 38px);
+            letter-spacing: -0.5px;
+            color: var(--text-hi);
+        }
+
+        .lead {
+            margin: 14px 0 32px;
+            color: var(--text-lo);
+            font-size: 15.5px;
+            line-height: 1.65;
+        }
+
+        /* ---------- Form Card ---------- */
+        .form-card {
+            padding: 32px;
+            border: 1px solid var(--line);
+            border-radius: 22px;
+            background: linear-gradient(180deg, rgba(25, 28, 61, 0.7), rgba(18, 20, 43, 0.7));
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            box-shadow: 0 20px 50px -10px rgba(0, 0, 0, 0.5);
+        }
+
+        form p { margin: 0 0 22px; }
+
+        form label {
+            display: block;
+            margin-bottom: 8px;
+            color: #ffe2a8;
+            font-size: 13.5px;
+            font-weight: 700;
+            letter-spacing: 0.2px;
+        }
+
+        form input, form select, form textarea {
+            width: 100%;
+            padding: 13px 15px;
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            outline: 0;
+            color: var(--text-hi);
+            background: var(--bg-0);
+            font: inherit;
+            font-size: 14.5px;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        form textarea {
+            min-height: 125px;
+            resize: vertical;
+        }
+
+        form input:focus, form select:focus, form textarea:focus {
+            border-color: var(--amber);
+            box-shadow: 0 0 0 3px var(--amber-dim);
+        }
+
+        form .helptext {
+            display: block;
+            margin-top: 6px;
+            color: var(--text-lo);
+            font-size: 12px;
+        }
+
+        button {
+            min-width: 160px;
+            min-height: 48px;
+            border: 0;
+            border-radius: 12px;
+            color: #14131f;
+            background: linear-gradient(135deg, var(--amber), #ff9d4d);
+            cursor: pointer;
+            font-family: 'Manrope', sans-serif;
+            font-weight: 700;
+            font-size: 14.5px;
+            box-shadow: 0 10px 24px -6px #ffc15466;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 14px 28px -4px #ffc15499;
+        }
+
+        .form-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            margin-top: 8px;
+            padding-top: 12px;
+        }
+
+        .form-footer span {
+            color: var(--text-lo);
+            font-size: 13px;
+        }
+
+        @media(max-width: 480px) {
+            .nav, main { width: min(100% - 28px, 720px); }
+            main { padding-top: 36px; }
+            .form-card { padding: 22px 18px; }
+            .form-footer { align-items: flex-start; flex-direction: column-reverse; }
+            button { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="grid-field"></div>
+    <div class="glow amber"></div>
+    <div class="glow blue"></div>
+
+    <header>
+        <nav class="nav">
+            <a class="brand" href="{% url 'home' %}"><span class="mark">H</span>Hire<b>Qarshi</b></a>
+            <a class="back" href="{% url 'home' %}">← Ortga qaytish</a>
+        </nav>
+    </header>
+
+    <main>
+        <p class="eyebrow">Ariza Topshirish</p>
+        <h1>Ish vakansiyasiga ariza yuborish</h1>
+        <p class="lead">Ma’lumotlaringizni to‘ldiring va rezyume yoki izohingizni ish beruvchiga yuboring.</p>
+
+        <section class="form-card">
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <div class="form-footer">
+                    <span>Arizangiz to‘g‘ridan-to‘g‘ri ish beruvchiga yuboriladi.</span>
+                    <button type="submit">Arizani yuborish</button>
+                </div>
+            </form>
+        </section>
+    </main>
+
+</body>
+</html>

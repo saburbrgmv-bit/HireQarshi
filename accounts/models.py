@@ -3,10 +3,10 @@ from django.contrib.auth.models import User
 
 class Profile(models.Model):
   JOOB_CHOOISE = [
-    ('Ishchi',  'Ishchi'),
-    ('Ish Beruvchi', 'Ish Beruvchi')
+    ('jobseeker',  'jobseeker'),
+    ('employer', 'employer'),
   ]
-  user = models.ManyToManyField(User)
+  user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
   resume = models.FileField(upload_to='resumes/')
   bio = models.TextField()
   avatar = models.ImageField(upload_to='avatars/')

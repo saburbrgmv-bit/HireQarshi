@@ -4,7 +4,7 @@ from django.views.generic import CreateView
 from django.urls import reverse_lazy
 from django.contrib.auth.views import LoginView
 from django.contrib.auth import logout
-from django.urls import  reverse
+from django.urls import  reverse_lazy
 
 def home(request):
   return render(request, 'accounts/home.html')
@@ -17,13 +17,15 @@ class RegisterCreateView(CreateView):
 class SignLoginView(LoginView):
   template_name = 'accounts/login.html'
 
-  def get_success_url(self):
+def get_success_url(self):
     user = self.request.user
-    if user.profile.role == 'Ishchi':
-      return redirect('Ishchi')
-    elif user.profile.role == 'Ish Beruvchi':
-      return redirect('Ish Beruvchi')
-    return reverse('home')
+    if user.is_authenticated and hasattr(user, 'profile'):
+        if user.profile.role == 'jobseeker':
+            return reverse_lazy('employer')
+        elif user.profile.role == 'employer':
+            return reverse_lazy('employer')
+
+    return reverse_lazy('home')
 
 def exit(request):
   logout(request)

@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HireQarshi — Jobs</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;700;800;900&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-0: #0a0c18;
+            --bg-1: #12142b;
+            --bg-2: #191c3d;
+            --amber: #ffc154;
+            --amber-dim: #ffc15422;
+            --blue: #5b7fff;
+            --text-hi: #f3f4fb;
+            --text-lo: #9aa0c3;
+            --line: #2a2e58;
+            --radius: 20px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Manrope', sans-serif;
+            min-height: 100vh;
+            min-height: 100dvh;
+            background: var(--bg-0);
+            color: var(--text-hi);
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        a { color: inherit; text-decoration: none; }
+
+        /* ---------- Ambient Backdrop ---------- */
+        .grid-field {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            background-image:
+                linear-gradient(var(--bg-1) 1px, transparent 1px),
+                linear-gradient(90deg, var(--bg-1) 1px, transparent 1px);
+            background-size: 64px 64px;
+            mask-image: radial-gradient(ellipse 80% 60% at 50% 40%, black 10%, transparent 75%);
+            -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 40%, black 10%, transparent 75%);
+            opacity: 0.4;
+            pointer-events: none;
+        }
+
+        .glow {
+            position: fixed;
+            width: 480px;
+            height: 480px;
+            border-radius: 50%;
+            filter: blur(120px);
+            z-index: 0;
+            pointer-events: none;
+        }
+        .glow.amber { background: #ffc15422; top: -8%; right: 8%; animation: drift1 16s ease-in-out infinite; }
+        .glow.blue  { background: #5b7fff1e; bottom: -10%; left: 4%; animation: drift2 18s ease-in-out infinite; }
+
+        @keyframes drift1 {
+            0%, 100% { transform: translate(0,0) scale(1); }
+            50% { transform: translate(-40px, 30px) scale(1.15); }
+        }
+        @keyframes drift2 {
+            0%, 100% { transform: translate(0,0) scale(1); }
+            50% { transform: translate(30px, -30px) scale(1.1); }
+        }
+
+        /* ---------- Header ---------- */
+        .topbar {
+            position: relative;
+            z-index: 10;
+            background: rgba(18, 20, 43, 0.7);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--line);
+            height: 80px;
+            display: flex;
+            align-items: center;
+        }
+        .container { width: min(1180px, calc(100% - 40px)); margin: 0 auto; }
+        .nav { display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+        .brand { display: flex; align-items: center; gap: 10px; font-family: 'Unbounded', sans-serif; font-size: 18px; font-weight: 700; }
+        .brand-mark {
+            display: grid; place-items: center; width: 36px; height: 36px;
+            color: #14131f; background: linear-gradient(140deg, var(--amber), #ff9d4d); border-radius: 10px; font-size: 16px; font-weight: 800;
+            box-shadow: 0 6px 18px -4px #ffc15466;
+        }
+        .brand span { color: var(--amber); }
+        .nav-links { display: flex; align-items: center; gap: 26px; margin-left: auto; color: var(--text-lo); font-size: 14px; font-weight: 600; }
+        .nav-links a:hover { color: var(--text-hi); }
+        .nav-links a:first-child { color: var(--amber); }
+
+        .post-button {
+            padding: 12px 20px; color: #14131f; background: linear-gradient(135deg, var(--amber), #ff9d4d); border-radius: 100px;
+            font-size: 14px; font-weight: 700; box-shadow: 0 10px 24px -6px #ffc15466;
+            transition: transform 0.3s cubic-bezier(.2,.8,.2,1), box-shadow 0.3s;
+        }
+        .post-button:hover { transform: translateY(-2px); box-shadow: 0 14px 28px -4px #ffc15499; }
+
+        /* ---------- Hero Section ---------- */
+        .hero {
+            position: relative;
+            z-index: 1;
+            padding: 64px 0 48px;
+            border-bottom: 1px solid var(--line);
+        }
+        .eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.6px;
+            text-transform: uppercase;
+            color: var(--amber);
+            background: var(--amber-dim);
+            border: 1px solid #ffc15440;
+            padding: 6px 14px;
+            border-radius: 100px;
+            margin-bottom: 20px;
+        }
+        h1 {
+            max-width: 720px; margin: 0 0 16px;
+            font-family: 'Unbounded', sans-serif;
+            font-size: clamp(30px, 4vw, 48px);
+            line-height: 1.18; letter-spacing: -0.5px;
+            color: var(--text-hi);
+        }
+        .hero-copy { max-width: 610px; margin: 0 0 32px; color: var(--text-lo); font-size: 16px; line-height: 1.65; }
+
+        /* Search Box */
+        .search-panel {
+            display: flex; gap: 10px; max-width: 840px; padding: 8px;
+            background: rgba(25, 28, 61, 0.7);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--line);
+            border-radius: 18px;
+            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.5);
+        }
+        .search-field { flex: 1; display: flex; align-items: center; gap: 12px; padding: 0 16px; min-height: 48px; color: var(--text-lo); border-right: 1px solid var(--line); }
+        .search-field:last-of-type { border-right: 0; }
+        .search-field input { width: 100%; border: 0; outline: 0; color: var(--text-hi); background: transparent; font: inherit; font-size: 14.5px; }
+        .search-field input::placeholder { color: var(--text-lo); opacity: 0.7; }
+        .search-button {
+            border: 0; padding: 0 28px; color: #14131f; background: linear-gradient(135deg, var(--amber), #ff9d4d);
+            border-radius: 12px; cursor: pointer; font: inherit; font-size: 14px; font-weight: 700;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .search-button:hover { transform: translateY(-1px); box-shadow: 0 8px 20px -4px #ffc15477; }
+
+        /* ---------- Main Content Grid ---------- */
+        main { position: relative; z-index: 1; padding: 48px 0 72px; }
+        .content-grid { display: grid; grid-template-columns: 260px 1fr; gap: 32px; }
+
+        /* Filters Aside */
+        .filter-card {
+            align-self: start; padding: 24px;
+            background: rgba(25, 28, 61, 0.6);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--line);
+            border-radius: 20px;
+        }
+        .filter-title { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; font-weight: 700; font-family: 'Unbounded', sans-serif; font-size: 15px; }
+        .clear { color: var(--amber); font-size: 12px; font-weight: 700; }
+        .clear:hover { text-decoration: underline; }
+        .filter-group { padding: 18px 0 6px; border-top: 1px solid var(--line); }
+        .filter-group strong { display: block; margin-bottom: 14px; font-size: 13.5px; color: var(--text-hi); letter-spacing: 0.2px; }
+        .check { display: flex; align-items: center; gap: 10px; margin: 12px 0; color: var(--text-lo); font-size: 13.5px; cursor: pointer; transition: color 0.2s; }
+        .check:hover { color: var(--text-hi); }
+        .check input { accent-color: var(--amber); width: 16px; height: 16px; cursor: pointer; }
+
+        /* Jobs Section Header */
+        .jobs-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .jobs-head h2 { margin: 0; font-family: 'Unbounded', sans-serif; font-size: 22px; font-weight: 700; letter-spacing: -0.3px; }
+        .jobs-head p { margin: 4px 0 0; color: var(--text-lo); font-size: 13.5px; }
+        .sort {
+            padding: 10px 14px; border: 1px solid var(--line); border-radius: 12px;
+            color: var(--text-hi); background: var(--bg-1); font: inherit; font-size: 13px; outline: none; cursor: pointer;
+        }
+
+        /* Job Cards List */
+        .job-list { display: grid; gap: 16px; }
+        .job-card {
+            position: relative; display: flex; align-items: center; gap: 18px; min-height: 108px; padding: 22px 52px 22px 22px;
+            background: linear-gradient(180deg, rgba(25, 28, 61, 0.7), rgba(18, 20, 43, 0.7));
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--line); border-radius: 20px;
+            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s cubic-bezier(.2,.8,.2,1), border-color 0.3s, background 0.3s;
+        }
+        .job-card:hover {
+            border-color: #3b417c;
+            background: linear-gradient(180deg, rgba(32, 36, 77, 0.8), rgba(22, 25, 54, 0.8));
+            transform: translateY(-3px);
+        }
+        .job-icon {
+            flex: 0 0 50px; display: grid; place-items: center; width: 50px; height: 50px;
+            color: var(--amber); background: var(--amber-dim); border: 1px solid #ffc15440;
+            border-radius: 14px; font-size: 20px;
+        }
+        .job-content { min-width: 0; flex: 1; }
+        .job-label { display: block; color: var(--text-hi); font-size: 17px; font-weight: 700; line-height: 1.4; }
+        .job-meta { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-top: 10px; color: var(--text-lo); font-size: 12.5px; }
+
+        .badge {
+            padding: 4px 10px; color: var(--amber); background: var(--amber-dim);
+            border: 1px solid #ffc15440; border-radius: 100px; font-weight: 700; font-size: 11.5px;
+        }
+
+        /* Action Links */
+        .detail-link, .apply-link, .edit-link, .delete-link {
+            padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 700; transition: all 0.2s ease;
+        }
+
+        .detail-link { color: var(--text-hi); border: 1px solid var(--line); background: rgba(255, 255, 255, 0.05); }
+        .detail-link:hover { border-color: var(--blue); background: rgba(91, 127, 255, 0.15); color: #8ba2ff; }
+
+        .apply-link { color: #14131f; border: 1px solid var(--amber); background: linear-gradient(135deg, var(--amber), #ff9d4d); }
+        .apply-link:hover { opacity: 0.9; transform: translateY(-1px); }
+
+        .edit-link { color: #8ba2ff; border: 1px solid #5b7fff55; background: rgba(91, 127, 255, 0.1); }
+        .edit-link:hover { color: #fff; border-color: var(--blue); background: var(--blue); }
+
+        .delete-link { color: #ff7b7b; border: 1px solid #ff4d4d44; background: rgba(255, 77, 77, 0.1); }
+        .delete-link:hover { color: #fff; border-color: #ff4d4d; background: #ff4d4d; }
+
+        .arrow { position: absolute; right: 22px; color: var(--amber); font-size: 22px; font-weight: 400; opacity: 0.8; }
+        .empty-note { margin: 24px 0 0; color: var(--text-lo); font-size: 13.5px; text-align: center; }
+
+        /* ---------- Responsive ---------- */
+        @media (max-width: 900px) {
+            .content-grid { grid-template-columns: 1fr; }
+            .filter-card { display: none; }
+        }
+        @media (max-width: 760px) {
+            .topbar { height: 70px; }
+            .nav-links { display: none; }
+            .hero { padding: 40px 0 30px; }
+            .search-panel { display: flex; flex-direction: column; padding: 10px; }
+            .search-field { border-right: 0; border-bottom: 1px solid var(--line); padding: 8px 10px; }
+            .search-button { width: 100%; height: 46px; margin-top: 4px; }
+            main { padding-top: 32px; }
+        }
+        @media (max-width: 460px) {
+            .container { width: min(100% - 28px, 1180px); }
+            .post-button { padding: 9px 14px; font-size: 12px; }
+            .jobs-head { flex-direction: column; align-items: flex-start; gap: 12px; }
+            .job-card { padding: 18px 42px 18px 16px; gap: 12px; }
+            .job-icon { width: 42px; height: 42px; flex-basis: 42px; font-size: 16px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="grid-field"></div>
+    <div class="glow amber"></div>
+    <div class="glow blue"></div>
+
+    <header class="topbar">
+        <nav class="container nav" aria-label="Main navigation">
+            <a class="brand" href="#"><span class="brand-mark">H</span>Hire<span>Qarshi</span></a>
+            <div class="nav-links">
+                <a href="#jobs">Ishlarni topish</a>
+                <a href="#">Freelancerlar</a>
+                <a href="#">Qanday ishlaydi</a>
+            </div>
+            <a class="post-button" href="{% url 'create' %}">+ Ish joylash</a>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <div class="container">
+            <p class="eyebrow">Yangi imkoniyatlar</p>
+            <h1>O‘zingizga mos ishni toping</h1>
+            <p class="hero-copy">Mahalliy va masofaviy loyihalar orasidan tajribangizga mos, ishonchli ish beruvchilar e’lonlarini tanlang.</p>
+            <form class="search-panel" action="#jobs">
+                <label class="search-field">
+                    <span aria-hidden="true">⌕</span>
+                    <input type="search" placeholder="Kasb yoki ko‘nikma bo‘yicha qidiring">
+                </label>
+                <label class="search-field">
+                    <span aria-hidden="true">⌖</span>
+                    <input type="text" placeholder="Joylashuv yoki masofaviy">
+                </label>
+                <button class="search-button" type="submit">Qidirish</button>
+            </form>
+        </div>
+    </section>
+
+    <main class="container" id="jobs">
+      <div class="content-grid">
+    <aside class="filter-card" aria-label="Filters" style="border-color: #ffc15440;">
+        <div class="filter-title" style="color: #ffc154;">
+            Filtrlar <a class="clear" href="#jobs" style="color: #ffe2a8;">Tozalash</a>
+        </div>
+        <div class="filter-group">
+            <strong style="color: #ffc154;">Ish turi</strong>
+            <label class="check" style="color: #ffe2a8;"><input type="checkbox"> Masofaviy</label>
+            <label class="check" style="color: #ffe2a8;"><input type="checkbox"> To‘liq stavka</label>
+            <label class="check" style="color: #ffe2a8;"><input type="checkbox"> Freelance loyiha</label>
+        </div>
+        <div class="filter-group">
+            <strong style="color: #ffc154;">Tajriba darajasi</strong>
+            <label class="check" style="color: #ffe2a8;"><input type="checkbox"> Boshlang‘ich</label>
+            <label class="check" style="color: #ffe2a8;"><input type="checkbox"> O‘rta daraja</label>
+            <label class="check" style="color: #ffe2a8;"><input type="checkbox"> Mutaxassis</label>
+        </div>
+    </aside>
+
+
+            <section>
+                <div class="jobs-head">
+                    <div>
+                        <h2>Mavjud ishlar</h2>
+                        <p>Eng so‘nggi e’lonlarni ko‘rib chiqing</p>
+                    </div>
+                    <select class="sort" aria-label="Saralash">
+                        <option>Eng yangilari</option>
+                        <option>Eng moslari</option>
+                    </select>
+                </div>
+
+                <div class="job-list">
+    {% for job in jobs %}
+                    <article class="job-card">
+                        <div class="job-icon" aria-hidden="true">✦</div>
+                        <div class="job-content">
+                            <span class="job-label">{{job}}</span>
+                            <div class="job-meta"><span class="badge">Yangi e’lon</span><span>•</span><span>Loyihani ko‘rish uchun bosing</span><a class="detail-link" href="{% url 'detail' job.pk %}">Batafsil</a><a class="apply-link" href="/applications/create/?job={{ job.pk }}">Ariza berish</a><a class="edit-link" href="{% url 'update' job.pk %}">Tahrirlash</a><a class="delete-link" href="{% url 'delete' job.pk %}">O‘chirish</a></div>
+                        </div>
+                        <span class="arrow" aria-hidden="true">›</span>
+                    </article>
+    {% endfor %}
+                </div>
+                <p class="empty-note">Siz uchun muntazam yangi imkoniyatlarni qo‘shib boramiz.</p>
+            </section>
+        </div>
+    </main>
+</body>
+</html>

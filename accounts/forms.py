@@ -5,13 +5,13 @@ from .models import Profile
 
 class RegisterForm(UserCreationForm):
     email = forms.EmailField(required=True)
-    rule = forms.ChoiceField(choices=Profile.JOOB_CHOOISE, widget=forms.RadioSelect(), label='Rolingiz')
+    role = forms.ChoiceField(choices=Profile.JOOB_CHOOISE, widget=forms.RadioSelect(), label='Rolingiz')
     resume = forms.FileField(required=False) # Changed to False if it's optional, keep True if mandatory
     phone = forms.CharField(required=True)
 
     class Meta:
         model = User
-        fields = ['username', 'email', 'rule', 'resume', 'phone']
+        fields = ['username', 'email', 'role', 'resume', 'phone']
         widgets = {
             'password':forms.PasswordInput(),
         }
@@ -24,9 +24,9 @@ class RegisterForm(UserCreationForm):
             user.save()
 
 
-            Profile.objects.create(
+        Profile.objects.create(
                 user=user,
                 resume=self.cleaned_data['resume'],
-                role=self.cleaned_data['rule']
+                role=self.cleaned_data['role']
               )
         return user

@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HireQarshi — E’lonni o‘chirish</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;700;800;900&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-0: #0a0c18;
+            --bg-1: #12142b;
+            --bg-2: #191c3d;
+            --amber: #ffc154;
+            --amber-dim: #ffc15422;
+            --danger: #ff5252;
+            --danger-dim: #ff525222;
+            --text-hi: #f3f4fb;
+            --text-lo: #9aa0c3;
+            --line: #2a2e58;
+            --radius: 20px;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            min-height: 100vh;
+            min-height: 100dvh;
+            margin: 0;
+            display: grid;
+            place-items: center;
+            padding: 28px;
+            color: var(--text-hi);
+            background: var(--bg-0);
+            font-family: "Manrope", sans-serif;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* ---------- Ambient Backdrop ---------- */
+        .grid-field {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            background-image:
+                linear-gradient(var(--bg-1) 1px, transparent 1px),
+                linear-gradient(90deg, var(--bg-1) 1px, transparent 1px);
+            background-size: 64px 64px;
+            mask-image: radial-gradient(ellipse 80% 60% at 50% 40%, black 10%, transparent 75%);
+            -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 40%, black 10%, transparent 75%);
+            opacity: 0.4;
+            pointer-events: none;
+        }
+
+        .glow {
+            position: fixed;
+            width: 480px;
+            height: 480px;
+            border-radius: 50%;
+            filter: blur(120px);
+            z-index: 0;
+            pointer-events: none;
+        }
+        .glow.red { background: #ff525222; top: -8%; right: 8%; animation: drift1 16s ease-in-out infinite; }
+        .glow.amber { background: #ffc1541e; bottom: -10%; left: 4%; animation: drift2 18s ease-in-out infinite; }
+
+        @keyframes drift1 {
+            0%, 100% { transform: translate(0,0) scale(1); }
+            50% { transform: translate(-40px, 30px) scale(1.15); }
+        }
+        @keyframes drift2 {
+            0%, 100% { transform: translate(0,0) scale(1); }
+            50% { transform: translate(30px, -30px) scale(1.1); }
+        }
+
+        /* ---------- Dialog Modal Card ---------- */
+        .dialog {
+            position: relative;
+            z-index: 1;
+            width: min(100%, 490px);
+            padding: 38px 32px;
+            border: 1px solid var(--line);
+            border-radius: 26px;
+            background: linear-gradient(180deg, rgba(25, 28, 61, 0.8), rgba(18, 20, 43, 0.8));
+            backdrop-filter: blur(22px);
+            -webkit-backdrop-filter: blur(22px);
+            box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+            text-align: center;
+        }
+
+        .icon {
+            display: grid;
+            place-items: center;
+            width: 58px;
+            height: 58px;
+            margin: 0 auto 20px;
+            border-radius: 50%;
+            color: var(--danger);
+            background: var(--danger-dim);
+            border: 1px solid #ff525255;
+            font-size: 24px;
+            font-weight: 800;
+            box-shadow: 0 0 20px rgba(255, 82, 82, 0.2);
+        }
+
+        h1 {
+            margin: 0;
+            font-family: 'Unbounded', sans-serif;
+            font-weight: 800;
+            font-size: 24px;
+            letter-spacing: -0.3px;
+            color: var(--text-hi);
+        }
+
+        .text {
+            margin: 14px 0 10px;
+            color: var(--text-lo);
+            font-size: 14.5px;
+            line-height: 1.6;
+        }
+
+        .job {
+            display: block;
+            margin: 18px 0 28px;
+            padding: 14px 16px;
+            overflow: hidden;
+            color: var(--amber);
+            border: 1px solid #ffc15433;
+            border-radius: 12px;
+            background: var(--amber-dim);
+            font-size: 14px;
+            font-weight: 700;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        form {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+        }
+
+        .cancel, button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 48px;
+            padding: 0 24px;
+            border-radius: 12px;
+            font-family: "Manrope", sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+            text-decoration: none;
+            cursor: pointer;
+            transition: transform 0.2s, background 0.2s, border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .cancel {
+            color: var(--text-hi);
+            border: 1px solid var(--line);
+            background: rgba(255, 255, 255, 0.05);
+        }
+        .cancel:hover {
+            border-color: var(--text-lo);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        button {
+            border: none;
+            color: #ffffff;
+            background: linear-gradient(135deg, #ff5252, #e03838);
+            box-shadow: 0 10px 24px -6px rgba(255, 82, 82, 0.5);
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 14px 28px -4px rgba(255, 82, 82, 0.7);
+        }
+
+        /* ---------- Responsive ---------- */
+        @media(max-width: 420px) {
+            body { padding: 16px; }
+            .dialog { padding: 28px 20px; }
+            form { flex-direction: column-reverse; }
+            .cancel, button { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="grid-field"></div>
+    <div class="glow red"></div>
+    <div class="glow amber"></div>
+
+    <main class="dialog">
+        <div class="icon" aria-hidden="true">!</div>
+        <h1>E’lonni o‘chirasizmi?</h1>
+        <p class="text">Bu amalni ortga qaytarib bo‘lmaydi. Quyidagi ish e’loni butunlay o‘chiriladi:</p>
+        <span class="job">{{ object }}</span>
+        <form method="post">
+            {% csrf_token %}
+            <a class="cancel" href="{% url 'employer' %}">Bekor qilish</a>
+            <button type="submit">Ha, o‘chirish</button>
+        </form>
+    </main>
+
+</body>
+</html>

@@ -27,6 +27,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'accounts',
+    'jobs',
+    'jobseeker',
+    'applications',
 ]
 
 MIDDLEWARE = [
@@ -108,3 +111,6 @@ STATIC_URL = 'static/'
 
 MEDIA_URL = 'media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+
+LOGIN_REDIRECT_URL = 'home'  # Or your specific route name
+LOGOUT_REDIRECT_URL = 'login'
